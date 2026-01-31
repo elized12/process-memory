@@ -10,7 +10,6 @@ MainWindow::MainWindow(logger::Logger& logger, QWidget *parent)
 {
     ui->setupUi(this);
 
-    std::unique_ptr<process::analysis::LinuxProcessMemoryParser> memoryParser =std::make_unique<process::analysis::LinuxProcessMemoryParser>();
     this->setPage(ui::page::PageType::ProcessSelect);
 }
 
@@ -34,6 +33,7 @@ void MainWindow::setPage(const ui::page::PageType& type) {
 
 void MainWindow::setPage(ui::page::IPage* page) {
     delete this->_page;
+
     this->_page = page;
     this->_page->show();
 }

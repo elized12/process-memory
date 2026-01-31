@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 
 #include "process/analysis/MemoryBlock.hpp"
 
@@ -14,6 +15,8 @@ public:
 private:
     bool containsGpu(const process::analysis::MemoryBlock& block) const;
     bool isSystemRegion(const process::analysis::MemoryBlock& block) const;
+    bool isLib(const process::analysis::MemoryBlock& block) const;
+    bool isResource(const process::analysis::MemoryBlock& block) const;
 };
 
 }

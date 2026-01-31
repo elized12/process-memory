@@ -27,7 +27,7 @@ std::vector<MemoryBlock> LinuxProcessMemoryParser::parseProcess(int pid) const {
         }
 
         MemoryBlock block;
-        block.rangeAdresses = std::pair<address, address>(std::stoull(match[1], nullptr, 16), std::stoull(match[2], nullptr, 16));
+        block.rangeAddresses = std::pair<address, address>(std::stoull(match[1], nullptr, 16), std::stoull(match[2], nullptr, 16));
         block.perms = MemoryPerms::parseFromString(match[3]);
         block.offset = static_cast<address>(std::stoull(match[4], nullptr, 16));
         block.device = match[5];

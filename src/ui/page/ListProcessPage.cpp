@@ -11,7 +11,7 @@ ListProcessPage::ListProcessPage(MainWindow& window, std::unique_ptr<process::de
 {
     this->_vbox = new QVBoxLayout();
 
-    this->_page = new QWidget();
+    this->_page = new QWidget(&this->_window);
     this->_page->setLayout(this->_vbox);
 
     this->_tableProcesses = new QTableView();
@@ -44,10 +44,9 @@ void ListProcessPage::selectProcess() {
      int selectRow = selectedRows[0].row();
      this->_selectProcessPid = this->_modelProcesses->item(selectRow, 0)->text().toInt();
 
-    std::unique_ptr<process::analysis::LinuxProcessMemoryParser> memoryParser =std::make_unique<process::analysis::LinuxProcessMemoryParser>();
-    ui::page::ProcessDetailPage* nextPage = new ui::page::ProcessDetailPage(this->_selectProcessPid, this->_window, std::move(memoryParser));
+    ui::page::ProcessDetailPage* nextPage = new ui::page::ProcessDetailPage(this->_selectProcessPid, this->_window);
 
-   this->_window.setPage(nextPage);
+    this->_window.setPage(nextPage);
 }
 
 void ListProcessPage::show() {
@@ -63,11 +62,12 @@ void ListProcessPage::show() {
 void ListProcessPage::hide() {
     this->_page->setVisible(false);
     this->_page->setEnabled(false);
+
+    this->_window.setCentralWidget(nullptr);
 }
 
 ListProcessPage::~ListProcessPage() {
     this->hide();
-    this->_window.setCentralWidget(nullptr);
 }
 
 void ListProcessPage::changeModelProcesses(const std::vector<process::ProcessInfo>& processes) {

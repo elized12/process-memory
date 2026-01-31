@@ -1,17 +1,15 @@
 #pragma once
 
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QStandardItemModel>
 #include <QTableView>
 #include <QPushButton>
 #include <QHeaderView>
 #include <QMessageBox>
+
 #include <vector>
-#include <QObject>
 
 #include "ui/page/IPage.hpp"
-#include "ui/page/ProcessDetailPage.hpp"
 #include "process/detail/LinuxProcessFinder.hpp"
 
 class MainWindow;

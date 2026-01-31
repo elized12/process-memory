@@ -33,6 +33,7 @@ set(PROJECT_SOURCES
         ${SOURCE_DIR}/ui/page/ListProcessPage.cpp
         ${SOURCE_DIR}/ui/page/ProcessDetailPage.cpp
         ${SOURCE_DIR}/ui/page/IPage.cpp
+        ${SOURCE_DIR}/FindValueType.cpp
         ${TS_FILES}
 )
 
@@ -65,7 +66,7 @@ endif()
 
 target_link_libraries(webbis-process-analyzer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
-target_include_directories(webbis-process-analyzer PRIVATE ${INCLUDE_DIR})
+target_include_directories(webbis-process-analyzer PUBLIC ${INCLUDE_DIR})
 
 set_target_properties(webbis-process-analyzer PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -81,7 +82,7 @@ elseif(UNIX)
     target_sources(webbis-process-analyzer PUBLIC
             ${SOURCE_DIR}/process/analysis/LinuxProcessMemoryParser.cpp
             ${SOURCE_DIR}/process/detail/LinuxProcessFinder.cpp
-            ${SOURCE_DIR}/process/memory/LinuxMemoryReader.cpp
+            ${SOURCE_DIR}/process/memory/LinuxMemoryFinder.cpp
             ${SOURCE_DIR}/process/memory/LinuxMemoryRegionFilter.cpp
     )
 endif()

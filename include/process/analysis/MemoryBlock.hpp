@@ -12,7 +12,7 @@ using address = std::uint64_t;
 
 class MemoryBlock {
 public:
-    std::pair<address, address> rangeAdresses;
+    std::pair<address, address> rangeAddresses;
     std::string name;
     std::string inode;
     std::string device;

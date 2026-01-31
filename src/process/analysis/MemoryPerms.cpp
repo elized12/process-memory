@@ -51,4 +51,36 @@ MemoryPerms MemoryPerms::parseFromString(const std::string& perm) {
     return perms;
 }
 
+std::string MemoryPerms::toString() const {
+    std::string result;
+
+    if (this->has(MemoryPerms::Perms::Read)) {
+        result += 'r';
+    } else {
+        result += '-';
+    }
+
+    if (this->has(MemoryPerms::Perms::Write)) {
+        result += 'w';
+    } else {
+        result += '-';
+    }
+
+    if (this->has(MemoryPerms::Perms::Executable)) {
+        result += 'x';
+    } else {
+        result += '-';
+    }
+
+    if (this->has(MemoryPerms::Perms::Private)) {
+        result += 'p';
+    } else if (this->has(MemoryPerms::Perms::Shared)) {
+        result += 's';
+    } else {
+        result += '-';
+    }
+
+    return result;
+}
+
 }

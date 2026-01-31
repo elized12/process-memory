@@ -1,0 +1,111 @@
+#pragma once
+
+#include <QString>
+#include <QDebug>
+
+#include <sys/uio.h>
+
+#include "process/memory/LinuxMemoryRegionFilter.hpp"
+#include "process/memory/ReadMemoryException.hpp"
+#include "process/memory/MemoryRecord.hpp"
+
+namespace process::memory {
+
+class LinuxMemoryFinder {
+private:
+    const static int BATCH_SIZE = 4096;
+    const static int MAX_FINDED_VALUES_COUNT = 1024 * 100;
+    process::memory::LinuxMemoryRegionFilter _filter;
+
+public:
+    LinuxMemoryFinder(const LinuxMemoryRegionFilter& filter);
+
+public:
+    template<class Type>
+    std::vector<MemoryRecord> readMemory(
+        int pid,
+        const std::vector<process::analysis::MemoryBlock>& memoryBlocks,
+        Type searchValue
+    ) const;
+};
+
+template<class Type>
+std::vector<MemoryRecord> LinuxMemoryFinder::readMemory(
+        int pid,
+        const std::vector<process::analysis::MemoryBlock>& memoryBlocks,
+        Type searchValue
+) const
+{
+    constexpr size_t overlap = sizeof(Type) - 1;
+
+    std::vector<MemoryRecord> memories;
+
+    for (const process::analysis::MemoryBlock& block : memoryBlocks) {
+        qDebug() << "Block" << QString::fromStdString(block.name)
+                 << QString::fromStdString(std::format("{:#0x}",block.rangeAddresses.first))
+                 << " - "
+                 << QString::fromStdString(std::format("{:#0x}",block.rangeAddresses.second))
+                 << QString::fromStdString(block.perms.toString());
+        if (this->_filter.shouldSkip(block)) {
+            qDebug() << "skip";
+            continue;
+        }
+
+
+        process::analysis::address start = block.rangeAddresses.first;
+        process::analysis::address end  = block.rangeAddresses.second;
+
+        for (process::analysis::address addr = start; addr < end; addr += this->BATCH_SIZE + overlap - 1) {
+            if (this->MAX_FINDED_VALUES_COUNT < memories.size()) {
+                return memories;
+            }
+
+            size_t toRead = std::min(
+                static_cast<size_t>(BATCH_SIZE),
+                static_cast<size_t>(end - addr)
+            );
+
+            std::vector<uint8_t> buffer(toRead);
+
+            iovec local;
+            local.iov_base = buffer.data();
+            local.iov_len = buffer.size();
+
+            iovec remote;
+            remote.iov_base = reinterpret_cast<void*>(addr);
+            remote.iov_len = buffer.size();
+
+            ssize_t nread = process_vm_readv(pid, &local, 1, &remote, 1, 0);
+            if (nread == -1) {
+                throw ReadMemoryException("Error read memory");
+            }
+
+            size_t bytesRead = static_cast<size_t>(nread);
+            size_t typeSize = sizeof(Type);
+
+            for (size_t offset = 0; offset + typeSize <= bytesRead; offset++) {
+                Type value;
+
+                std::memcpy(
+                    &value,
+                    buffer.data() + offset,
+                    typeSize
+                );
+
+                if (searchValue == value) {
+                    MemoryRecord record;
+                    record.address = addr + offset;
+                    record.value = value;
+
+                    memories.push_back(std::move(record));
+                }
+            }
+        }
+    }
+
+    return memories;
+}
+
+}
+
+

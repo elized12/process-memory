@@ -28,6 +28,7 @@ public:
     MemoryPerms& set(Perms perm);
     bool has(Perms perm) const;
     static MemoryPerms parseFromString(const std::string& perm);
+    std::string toString() const;
 };
 
 }
