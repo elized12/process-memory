@@ -2,17 +2,17 @@
 
 namespace process::memory {
 
-LinuxSmartMemoryFinder::LinuxSmartMemoryFinder(const process::memory::LinuxMemoryFinder& finder) :
+LinuxSmartMemoryFinder::LinuxSmartMemoryFinder(const LinuxMemoryFinder& finder) :
     _finder(finder)
 {
 
 }
 
-std::vector<process::memory::MemoryRecord> LinuxSmartMemoryFinder::findValues(
+std::vector<MemoryRecord> LinuxSmartMemoryFinder::findValues(
     int pid,
     const std::vector<process::analysis::MemoryBlock>& memoryBlocks,
     TypeValue targetValue,
-    const FindValueType type
+    const FindValueType& type
 ) const
 {
     switch (type) {

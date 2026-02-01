@@ -52,11 +52,6 @@ bool LinuxMemoryRegionFilter::shouldSkip(const process::analysis::MemoryBlock& b
         return true;
     }
 
-    //Test
-    if (block.name != "[stack]") {
-        return true;
-    }
-
     if (this->containsGpu(block)) {
         return true;
     }

@@ -33,7 +33,6 @@ set(PROJECT_SOURCES
         ${SOURCE_DIR}/ui/page/ListProcessPage.cpp
         ${SOURCE_DIR}/ui/page/ProcessDetailPage.cpp
         ${SOURCE_DIR}/ui/page/IPage.cpp
-        ${SOURCE_DIR}/FindValueType.cpp
         ${TS_FILES}
 )
 
@@ -84,6 +83,7 @@ elseif(UNIX)
             ${SOURCE_DIR}/process/detail/LinuxProcessFinder.cpp
             ${SOURCE_DIR}/process/memory/LinuxMemoryFinder.cpp
             ${SOURCE_DIR}/process/memory/LinuxMemoryRegionFilter.cpp
+            ${SOURCE_DIR}/process/memory/LinuxSmartMemoryFinder.cpp
     )
 endif()
 

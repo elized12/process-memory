@@ -2,6 +2,9 @@
 
 #include <sys/uio.h>
 #include <cstdint>
+#include <cstring>
+#include <cerrno>
+#include <string>
 
 #include "process/memory/WriteMemoryException.hpp"
 
@@ -48,7 +51,7 @@ void LinuxMemoryWriter::write(int pid, std::uint64_t address, Type value) {
                 errorMsg = "Process does not exist (ESRCH)";
                 break;
             default:
-                errorMsg = "Unknown error: " + std::string(strerror(err));
+                errorMsg = "Unknown error: " + std::string(std::strerror(err));
                 break;
         }
 

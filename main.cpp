@@ -1,9 +1,13 @@
-#include "mainwindow.h"
-#include "process/detail/LinuxProcessFinder.hpp"
-
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+
+#include <cstdlib>
+
+#include <unistd.h>
+#include <limits.h>
+
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {

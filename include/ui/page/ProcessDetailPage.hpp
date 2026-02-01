@@ -16,7 +16,7 @@
 #include "FindValueType.hpp"
 #include "process/memory/LinuxSmartMemoryFinder.hpp"
 #include "process/analysis/LinuxProcessMemoryParser.hpp"
-#include "process/memory/LinuxMemoryWriter.hpp"
+#include "process/memory/LinuxSmartMemoryWriter.hpp"
 
 class MainWindow;
 
@@ -38,6 +38,7 @@ private:
     QLabel* _selectValueAddressLabel;
     QLabel* _selectValueLabel;
     process::memory::LinuxSmartMemoryFinder _memoryFinder;
+    process::memory::LinuxSmartMemoryWriter _memoryWriter;
     QStandardItemModel* _findedValuesModel;
     ssize_t _selectRow;
 
