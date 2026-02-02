@@ -8,10 +8,12 @@
 #include <format>
 #include <regex>
 #include <istream>
+#include <cerrno>
 
 #include "process/analysis/ParseException.hpp"
 #include "process/analysis/NotExistsException.hpp"
 #include "process/analysis/MemoryBlock.hpp"
+#include "process/analysis/PermissionFileReadExceptiion.hpp"
 
 namespace process::analysis {
 

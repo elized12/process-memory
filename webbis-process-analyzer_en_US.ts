@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<TS version="2.1" language="en_US">
 <context>
     <name>IPage</name>
     <message>
+        <source>UpdateListProcessButton</source>
+        <translation type="unfinished">Update process list</translation>
+    </message>
+    <message>
+        <source>SelectProcessButton</source>
+        <translation type="unfinished">Select process</translation>
+    </message>
+    <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="40"/>
         <source>ErrorSelectProcessTitle</source>
-        <translation type="unfinished">Ошибка выбора процесса</translation>
+        <translation>Error selecting process</translation>
     </message>
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="40"/>
         <source>ErrorSelectProcessDescription</source>
-        <translation type="unfinished">Сначала выберите процесс</translation>
+        <translation type="unfinished">Error select process, please before select process</translation>
     </message>
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="77"/>
         <source>TableProcessPID</source>
-        <translation type="unfinished">PID</translation>
+        <translation>PID</translation>
     </message>
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="78"/>
         <source>TableProcessName</source>
-        <translation type="unfinished">Имя процесса</translation>
+        <translation>Process Name</translation>
     </message>
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="79"/>
         <source>TableProcessStatus</source>
-        <translation type="unfinished">Статус</translation>
+        <translation>Status</translation>
     </message>
 </context>
 <context>
@@ -34,28 +42,12 @@
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="25"/>
         <source>UpdateListProcessButton</source>
-        <translation>Обновить список процессов</translation>
+        <translation type="unfinished">Update process list</translation>
     </message>
     <message>
         <location filename="src/ui/page/ListProcessPage.cpp" line="32"/>
         <source>SelectProcessButton</source>
-        <translation>Выбрать процесс</translation>
-    </message>
-    <message>
-        <source>ErrorSelectProcessTitle</source>
-        <translation type="vanished">Ошибка выбора процесса</translation>
-    </message>
-    <message>
-        <source>TableProcessPID</source>
-        <translation type="vanished">PID</translation>
-    </message>
-    <message>
-        <source>TableProcessName</source>
-        <translation type="vanished">Имя процесса</translation>
-    </message>
-    <message>
-        <source>TableProcessStatus</source>
-        <translation type="vanished">Статус</translation>
+        <translation type="unfinished">Select process</translation>
     </message>
 </context>
 <context>
@@ -63,58 +55,58 @@
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="12"/>
         <source>SearchButton</source>
-        <translation>Поиск</translation>
+        <translation>Search</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="13"/>
         <source>ChangeButton</source>
-        <translation>Изменить</translation>
+        <translation>Change</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="18"/>
         <source>AddressLabel</source>
-        <translation>Адрес</translation>
+        <translation>Address</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="19"/>
         <source>ValueLabel</source>
-        <translation>Значение</translation>
+        <translation>Value</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="21"/>
         <source>BackButton</source>
-        <translation>Назад</translation>
+        <translation>Back</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="92"/>
         <source>SearchAlreadyTitle</source>
-        <translation>Поиск уже запущен</translation>
+        <translation>Search already running</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="92"/>
         <source>SearchAlreadyDescription</source>
-        <translation>Подождите, поиск уже идет...</translation>
+        <translation>Please wait, search is already in progress...</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="117"/>
         <source>Address</source>
-        <translation>Адрес</translation>
+        <translation>Address</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="118"/>
         <source>Value</source>
-        <translation>Значение</translation>
+        <translation>Value</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="162"/>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="178"/>
         <source>ErrorMessageWriteMemoryTitle</source>
-        <translation>Ошибка записи памяти</translation>
+        <translation>Memory write error</translation>
     </message>
     <message>
         <location filename="src/ui/page/ProcessDetailPage.cpp" line="163"/>
         <source>ErrorMessageWriteMemoryDescription</source>
-        <translation>Адрес и значение должны быть заполнены!</translation>
+        <translation>Address and value must be filled!</translation>
     </message>
 </context>
 </TS>

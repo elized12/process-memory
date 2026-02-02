@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QCoreApplication>
 
 #include <vector>
 

@@ -22,14 +22,14 @@ ListProcessPage::ListProcessPage(MainWindow& window, std::unique_ptr<process::de
     this->_tableProcesses->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
     this->_vbox->addWidget(this->_tableProcesses);
 
-    this->_buttonUpdateListProcesses = new QPushButton("Обновить список процессов");
+    this->_buttonUpdateListProcesses = new QPushButton(QCoreApplication::translate("IPage", "UpdateListProcessButton"));
     this->_vbox->addWidget(this->_buttonUpdateListProcesses);
     this->connect(this->_buttonUpdateListProcesses, &QPushButton::clicked, this, [this]() {
         std::vector<process::ProcessInfo> processes = this->_finder->getProcesses();
         this->changeModelProcesses(processes);
     });
 
-    this->_buttonSelectProcess = new QPushButton("Выбрать процесс");
+    this->_buttonSelectProcess = new QPushButton(QCoreApplication::translate("IPage", "SelectProcessButton"));
     this->connect(this->_buttonSelectProcess, &QPushButton::clicked, this, &ListProcessPage::selectProcess);
     this->_vbox->addWidget(this->_buttonSelectProcess);
 }
@@ -37,7 +37,11 @@ ListProcessPage::ListProcessPage(MainWindow& window, std::unique_ptr<process::de
 void ListProcessPage::selectProcess() {
      QModelIndexList selectedRows = this->_tableProcesses->selectionModel()->selectedRows();
      if (selectedRows.isEmpty()) {
-           QMessageBox::information(&this->_window, "Ошибка", "Выберите процесс");
+           QMessageBox::information(
+                &this->_window,
+                QCoreApplication::translate("IPage", "ErrorSelectProcessTitle"),
+                QCoreApplication::translate("IPage", "ErrorSelectProcessDescription")
+            );
            return;
      }
 
@@ -74,9 +78,9 @@ void ListProcessPage::changeModelProcesses(const std::vector<process::ProcessInf
     delete this->_modelProcesses;
     this->_modelProcesses = new QStandardItemModel(static_cast<int>(processes.size()), 3);
     this->_modelProcesses->setHorizontalHeaderLabels({
-        "PID",
-        "Name",
-        "Status"
+        QCoreApplication::translate("IPage", "TableProcessPID"),
+        QCoreApplication::translate("IPage", "TableProcessName"),
+        QCoreApplication::translate("IPage", "TableProcessStatus")
     });
 
     int row = 0;

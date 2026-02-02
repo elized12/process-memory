@@ -1,11 +1,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-
-#include <cstdlib>
-
-#include <unistd.h>
-#include <limits.h>
+#include <QProcess>
 
 #include "mainwindow.h"
 
@@ -17,7 +13,7 @@ int main(int argc, char *argv[])
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {
         const QString baseName = "webbis-process-analyzer_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
+        if (translator.load(baseName + ".qm", a.applicationDirPath())) {
             a.installTranslator(&translator);
             break;
         }

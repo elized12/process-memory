@@ -9,16 +9,16 @@ ProcessDetailPage::ProcessDetailPage(int pid, MainWindow& window) :
     _selectProcessPid(pid),
     _table(new QTableView()),
     _gridLayout(new QGridLayout()),
-    _findValueButton(new QPushButton("Поиск")),
-    _changeValueButton(new QPushButton("Изменить")),
+    _findValueButton(new QPushButton(QCoreApplication::translate("IPage", "SearchButton"))),
+    _changeValueButton(new QPushButton(QCoreApplication::translate("IPage", "ChangeButton"))),
     _findValueEdit(new QLineEdit()),
     _selectTypeValueBox(new QComboBox()),
     _changeValueEdit(new QLineEdit()),
     _selectValueAdressEdit(new QLineEdit()),
-    _selectValueAddressLabel(new QLabel("Адрес")),
-    _selectValueLabel(new QLabel("Значение")),
+    _selectValueAddressLabel(new QLabel(QCoreApplication::translate("IPage", "AddressLabel"))),
+    _selectValueLabel(new QLabel(QCoreApplication::translate("IPage", "ValueLabel"))),
     _findedValuesModel(new QStandardItemModel()),
-    _backButton(new QPushButton("Назад")),
+    _backButton(new QPushButton(QCoreApplication::translate("IPage", "BackButton"))),
     _isSearching(false),
     _memoryWriter(process::memory::LinuxMemoryWriter(this->_window.getLogger())),
     _memoryFinder(process::memory::LinuxMemoryFinder(process::memory::LinuxMemoryRegionFilter(), this->_window.getLogger()))
@@ -89,7 +89,11 @@ ProcessDetailPage::~ProcessDetailPage() {
 
 void ProcessDetailPage::findValue() {
     if (this->_isSearching.load()) {
-        QMessageBox::information(&this->_window, "Поиск уже запущен", "Подождите, поиск уже идет...");
+        QMessageBox::information(
+            &this->_window,
+            QCoreApplication::translate("IPage", "SearchAlreadyTitle"),
+            QCoreApplication::translate("IPage", "SearchAlreadyDescription")
+        );
         return;
     }
 
@@ -98,46 +102,74 @@ void ProcessDetailPage::findValue() {
     this->_findValueButton->setEnabled(false);
     this->_backButton->setEnabled(false);
 
-    std::thread searchValues([this]() {
+    std::thread searchValues([this] () {
         const FindValueType selectType = qvariant_cast<FindValueType>(this->_selectTypeValueBox->currentData());
         const process::memory::TypeValue target = process::memory::parseTargetValue(this->_findValueEdit->text(), selectType);
 
         process::analysis::LinuxProcessMemoryParser parser;
 
-        std::vector<process::memory::MemoryRecord> findedValues = this->_memoryFinder.findValues(
-            this->_selectProcessPid,
-            parser.parseProcess(this->_selectProcessPid),
-            target,
-            selectType
-        );
-
-        QMetaObject::invokeMethod(this, [this, findedValues, selectType] () {
-            this->_findedValuesModel->clear();
-            this->_findedValuesModel->setHorizontalHeaderLabels({
-                "Адрес",
-                "Значение"
-            });
-
-            for (const process::memory::MemoryRecord& value : findedValues) {
-                this->_findedValuesModel->appendRow({
-                    new QStandardItem(QString("0x%1").arg(value.address, 0, 16).toUpper()),
-                    new QStandardItem(process::memory::variantToString(value.value, selectType))
-                });
-            }
-
-            this->_table->setModel(this->_findedValuesModel);
-
-            this->connect(
-                this->_table->selectionModel(),
-                &QItemSelectionModel::currentRowChanged,
-                this,
-                &ProcessDetailPage::setActiveRow
+        try {
+            std::vector<process::memory::MemoryRecord> findedValues = this->_memoryFinder.findValues(
+                this->_selectProcessPid,
+                parser.parseProcess(this->_selectProcessPid),
+                target,
+                selectType
             );
 
-            this->_isSearching.store(false);
-            this->_findValueButton->setEnabled(true);
-            this->_backButton->setEnabled(true);
-        });
+            QMetaObject::invokeMethod(this, [this, findedValues, selectType] () {
+                this->_findedValuesModel->clear();
+                this->_findedValuesModel->setHorizontalHeaderLabels({
+                    QCoreApplication::translate("IPage", "Address"),
+                    QCoreApplication::translate("IPage", "Value")
+                });
+
+                for (const process::memory::MemoryRecord& value : findedValues) {
+                    this->_findedValuesModel->appendRow({
+                        new QStandardItem(QString("0x%1").arg(value.address, 0, 16).toUpper()),
+                        new QStandardItem(process::memory::variantToString(value.value, selectType))
+                    });
+                }
+
+                this->_table->setModel(this->_findedValuesModel);
+
+                this->connect(
+                    this->_table->selectionModel(),
+                    &QItemSelectionModel::currentRowChanged,
+                    this,
+                    &ProcessDetailPage::setActiveRow
+                );
+
+                this->_isSearching.store(false);
+                this->_findValueButton->setEnabled(true);
+                this->_backButton->setEnabled(true);
+            });
+        }
+        catch (const process::memory::PermissionDeniedException& ex) {
+            QMetaObject::invokeMethod(this, [this] () {
+                QMessageBox::critical(
+                    &this->_window,
+                    QCoreApplication::translate("IPage", "ErrorPermissionDeniedTitle"),
+                    QCoreApplication::translate("IPage", "ErrorPermissionDeniedDescription")
+                );
+
+                this->_isSearching.store(false);
+                this->_findValueButton->setEnabled(true);
+                this->_backButton->setEnabled(true);
+            });
+        }
+        catch (const std::exception& ex) {
+            QMetaObject::invokeMethod(this, [this] () {
+                QMessageBox::critical(
+                    &this->_window,
+                    QCoreApplication::translate("IPage", "ErrorReadMemoryTitle"),
+                    QCoreApplication::translate("IPage", "ErrorReadMemoryDescription")
+                );
+
+                this->_isSearching.store(false);
+                this->_findValueButton->setEnabled(true);
+                this->_backButton->setEnabled(true);
+            });
+        }
     });
 
     searchValues.detach();
@@ -159,8 +191,8 @@ void ProcessDetailPage::changeValue() {
     ) {
         QMessageBox::critical(
             &this->_window,
-            "Ошибка записи памяти",
-            "Адрес и значение должны быть заполнены!"
+            QCoreApplication::translate("IPage", "ErrorMessageWriteMemoryTitle"),
+            QCoreApplication::translate("IPage", "ErrorMessageWriteMemoryDescription")
         );
         return;
     }
@@ -175,7 +207,7 @@ void ProcessDetailPage::changeValue() {
         this->_findedValuesModel->item(this->_selectRow, 1)->setText(this->_changeValueEdit->text());
     }
     catch (const std::exception& ex) {
-        QMessageBox::critical(&this->_window, "Ошибка записи памяти", ex.what());
+        QMessageBox::critical(&this->_window, QCoreApplication::translate("IPage", "ErrorMessageWriteMemoryTitle"), ex.what());
     }
 }
 

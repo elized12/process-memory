@@ -1,4 +1,5 @@
 #include "process/analysis/LinuxProcessMemoryParser.hpp"
+#include <QDebug>
 
 namespace process::analysis {
 

@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QMessageBox>
+#include <QCoreApplication>
 
 #include <atomic>
 #include <vector>
