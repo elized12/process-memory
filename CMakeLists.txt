@@ -84,6 +84,7 @@ elseif(UNIX)
             ${SOURCE_DIR}/process/memory/LinuxMemoryFinder.cpp
             ${SOURCE_DIR}/process/memory/LinuxMemoryRegionFilter.cpp
             ${SOURCE_DIR}/process/memory/LinuxSmartMemoryFinder.cpp
+            ${SOURCE_DIR}/process/memory/LinuxMemoryWriter.cpp
     )
 endif()
 

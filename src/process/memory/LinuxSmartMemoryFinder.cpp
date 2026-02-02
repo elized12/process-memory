@@ -50,7 +50,7 @@ std::vector<MemoryRecord> LinuxSmartMemoryFinder::findValues(
             return this->_finder.readMemory<float>(pid, memoryBlocks, std::get<float>(targetValue));
         }
         case FindValueType::string: {
-            return this->_finder.readMemory<std::string>(pid, memoryBlocks, std::get<std::string>(targetValue));
+            return this->_finder.readMemory(pid, memoryBlocks, std::get<std::string>(targetValue));
         }
     default:
         throw std::runtime_error("Неизвестная ошибка с типом");

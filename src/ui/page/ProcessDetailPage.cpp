@@ -17,9 +17,11 @@ ProcessDetailPage::ProcessDetailPage(int pid, MainWindow& window) :
     _selectValueAdressEdit(new QLineEdit()),
     _selectValueAddressLabel(new QLabel("Адрес")),
     _selectValueLabel(new QLabel("Значение")),
-    _memoryFinder(process::memory::LinuxMemoryFinder(process::memory::LinuxMemoryRegionFilter())),
     _findedValuesModel(new QStandardItemModel()),
-    _memoryWriter(process::memory::LinuxMemoryWriter())
+    _backButton(new QPushButton("Назад")),
+    _isSearching(false),
+    _memoryWriter(process::memory::LinuxMemoryWriter(this->_window.getLogger())),
+    _memoryFinder(process::memory::LinuxMemoryFinder(process::memory::LinuxMemoryRegionFilter(), this->_window.getLogger()))
 {
     this->_page->setLayout(this->_gridLayout);
 
@@ -37,7 +39,6 @@ ProcessDetailPage::ProcessDetailPage(int pid, MainWindow& window) :
     this->_selectTypeValueBox->addItem("double8", QVariant::fromValue(FindValueType::double8));
     this->_selectTypeValueBox->addItem("string", QVariant::fromValue(FindValueType::string));
 
-
     this->_gridLayout->addWidget(this->_selectTypeValueBox, 0, 4, 1, 1);
 
     this->connect(this->_findValueButton, &QPushButton::clicked, this, &ProcessDetailPage::findValue);
@@ -48,6 +49,8 @@ ProcessDetailPage::ProcessDetailPage(int pid, MainWindow& window) :
 
     this->_gridLayout->addWidget(this->_selectValueAddressLabel, 1, 0, 1, 1);
     this->_gridLayout->addWidget(this->_selectValueLabel, 1, 2, 1, 1);
+
+    this->_changeValueEdit->setReadOnly(true);
     this->_gridLayout->addWidget(this->_changeValueEdit, 1, 3, 1, 1);
 
     this->connect(this->_changeValueButton, &QPushButton::clicked, this, &ProcessDetailPage::changeValue);
@@ -60,6 +63,9 @@ ProcessDetailPage::ProcessDetailPage(int pid, MainWindow& window) :
     this->_table->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 
     this->_gridLayout->addWidget(this->_table, 3, 0, 1, 7);
+
+    this->connect(this->_backButton, &QPushButton::clicked, this, &ProcessDetailPage::backPage);
+    this->_gridLayout->addWidget(this->_backButton, 4, 0, 1, 7);
 }
 
 
@@ -82,44 +88,64 @@ ProcessDetailPage::~ProcessDetailPage() {
 }
 
 void ProcessDetailPage::findValue() {
-    const FindValueType selectType = qvariant_cast<FindValueType>(this->_selectTypeValueBox->currentData());
-    const process::memory::TypeValue target = process::memory::parseTargetValue(this->_findValueEdit->text(), selectType);
-
-    process::analysis::LinuxProcessMemoryParser parser;
-
-    std::vector<process::memory::MemoryRecord> findedValues = this->_memoryFinder.findValues(
-        this->_selectProcessPid,
-        parser.parseProcess(this->_selectProcessPid),
-        target,
-        selectType
-    );
-
-    this->_findedValuesModel->clear();
-    this->_findedValuesModel->setHorizontalHeaderLabels({
-        "Адрес",
-        "Значение"
-    });
-
-    for (const process::memory::MemoryRecord& value : findedValues) {
-        this->_findedValuesModel->appendRow({
-            new QStandardItem(QString("0x%1").arg(value.address, 0, 16).toUpper()),
-            new QStandardItem(process::memory::variantToString(value.value, selectType))
-        });
+    if (this->_isSearching.load()) {
+        QMessageBox::information(&this->_window, "Поиск уже запущен", "Подождите, поиск уже идет...");
+        return;
     }
 
-    this->_table->setModel(this->_findedValuesModel);
-
-    this->connect(
-        this->_table->selectionModel(),
-        &QItemSelectionModel::currentRowChanged,
-        this,
-        &ProcessDetailPage::setActiveRow
-    );
-
     this->clearChangeEdits();
+    this->_isSearching.store(true);
+    this->_findValueButton->setEnabled(false);
+    this->_backButton->setEnabled(false);
+
+    std::thread searchValues([this]() {
+        const FindValueType selectType = qvariant_cast<FindValueType>(this->_selectTypeValueBox->currentData());
+        const process::memory::TypeValue target = process::memory::parseTargetValue(this->_findValueEdit->text(), selectType);
+
+        process::analysis::LinuxProcessMemoryParser parser;
+
+        std::vector<process::memory::MemoryRecord> findedValues = this->_memoryFinder.findValues(
+            this->_selectProcessPid,
+            parser.parseProcess(this->_selectProcessPid),
+            target,
+            selectType
+        );
+
+        QMetaObject::invokeMethod(this, [this, findedValues, selectType] () {
+            this->_findedValuesModel->clear();
+            this->_findedValuesModel->setHorizontalHeaderLabels({
+                "Адрес",
+                "Значение"
+            });
+
+            for (const process::memory::MemoryRecord& value : findedValues) {
+                this->_findedValuesModel->appendRow({
+                    new QStandardItem(QString("0x%1").arg(value.address, 0, 16).toUpper()),
+                    new QStandardItem(process::memory::variantToString(value.value, selectType))
+                });
+            }
+
+            this->_table->setModel(this->_findedValuesModel);
+
+            this->connect(
+                this->_table->selectionModel(),
+                &QItemSelectionModel::currentRowChanged,
+                this,
+                &ProcessDetailPage::setActiveRow
+            );
+
+            this->_isSearching.store(false);
+            this->_findValueButton->setEnabled(true);
+            this->_backButton->setEnabled(true);
+        });
+    });
+
+    searchValues.detach();
 }
 
 void ProcessDetailPage::setActiveRow(const QModelIndex &curr, const QModelIndex &prev) {
+    this->_changeValueEdit->setReadOnly(false);
+
     this->_selectRow = curr.row();
 
     this->_selectValueAdressEdit->setText(this->_findedValuesModel->data(this->_findedValuesModel->index(this->_selectRow, 0)).toString());
@@ -146,6 +172,7 @@ void ProcessDetailPage::changeValue() {
 
     try {
         this->_memoryWriter.write(this->_selectProcessPid, address, value, selectType);
+        this->_findedValuesModel->item(this->_selectRow, 1)->setText(this->_changeValueEdit->text());
     }
     catch (const std::exception& ex) {
         QMessageBox::critical(&this->_window, "Ошибка записи памяти", ex.what());
@@ -156,4 +183,12 @@ void ProcessDetailPage::clearChangeEdits() {
     this->_changeValueEdit->clear();
     this->_selectValueAdressEdit->clear();
 }
+
+void ProcessDetailPage::backPage() {
+    std::unique_ptr<process::detail::LinuxProcessFinder> finder = std::make_unique<process::detail::LinuxProcessFinder>(this->_window.getLogger());
+    ui::page::ListProcessPage* nextPage = new ui::page::ListProcessPage(this->_window, std::move(finder));
+
+    this->_window.setPage(nextPage);
+}
+
 }

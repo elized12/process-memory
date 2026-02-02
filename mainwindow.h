@@ -22,6 +22,7 @@ public:
 public:
     void setPage(const ui::page::PageType& type);
     void setPage(ui::page::IPage* page);
+    logger::Logger& getLogger();
 
 private:
     Ui::MainWindow *ui;

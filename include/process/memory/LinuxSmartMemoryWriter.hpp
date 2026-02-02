@@ -57,7 +57,6 @@ inline void LinuxSmartMemoryWriter::write(
             break;
         }
         case FindValueType::int32: {
-            qDebug() << static_cast<int>(type) << std::get<std::int32_t>(value) << address << pid;
             this->_writer.write<std::int32_t>(pid, address, std::get<std::int32_t>(value));
             break;
         }
@@ -78,7 +77,7 @@ inline void LinuxSmartMemoryWriter::write(
             break;
         }
         case FindValueType::string: {
-            this->_writer.write<std::string>(pid, address, std::get<std::string>(value));
+            this->_writer.write(pid, address, std::get<std::string>(value));
             break;
         }
     default:

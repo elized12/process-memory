@@ -38,6 +38,10 @@ void MainWindow::setPage(ui::page::IPage* page) {
     this->_page->show();
 }
 
+logger::Logger& MainWindow::getLogger() {
+    return this->_logger;
+}
+
 
 MainWindow::~MainWindow()
 {

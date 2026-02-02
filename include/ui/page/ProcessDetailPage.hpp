@@ -10,13 +10,17 @@
 #include <QLabel>
 #include <QMessageBox>
 
+#include <atomic>
 #include <vector>
+#include <thread>
 
 #include "ui/page/IPage.hpp"
 #include "FindValueType.hpp"
 #include "process/memory/LinuxSmartMemoryFinder.hpp"
 #include "process/analysis/LinuxProcessMemoryParser.hpp"
 #include "process/memory/LinuxSmartMemoryWriter.hpp"
+#include "ui/page/ListProcessPage.hpp"
+#include "process/detail/LinuxProcessFinder.hpp"
 
 class MainWindow;
 
@@ -31,6 +35,7 @@ private:
     QGridLayout* _gridLayout;
     QPushButton* _findValueButton;
     QPushButton* _changeValueButton;
+    QPushButton* _backButton;
     QLineEdit* _findValueEdit;
     QLineEdit* _changeValueEdit;
     QLineEdit* _selectValueAdressEdit;
@@ -41,6 +46,7 @@ private:
     process::memory::LinuxSmartMemoryWriter _memoryWriter;
     QStandardItemModel* _findedValuesModel;
     ssize_t _selectRow;
+    std::atomic<bool> _isSearching;
 
 public:
     ProcessDetailPage(int pid, MainWindow& window);
@@ -54,6 +60,7 @@ private slots:
     void findValue();
     void changeValue();
     void setActiveRow(const QModelIndex &curr, const QModelIndex &prev);
+    void backPage();
 
 private:
     void clearChangeEdits();
