@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <format>
+#include <ctime>
 
 #include "logger/LogLevel.hpp"
 

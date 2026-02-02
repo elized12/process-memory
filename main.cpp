@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    logger::Logger logger("/var/log/test.log");
+    logger::Logger logger("/var/log/webbis-process-analyzer.log");
 
     MainWindow window(logger);
     window.setWindowTitle("Process Reader");

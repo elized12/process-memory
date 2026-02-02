@@ -8,7 +8,11 @@ Logger::Logger(std::string path): _path(std::move(path)) {
 
 void Logger::log(const std::string& message, const LogLevel& level) {
     this->reopen();
-    this->_logger << std::format("{}:{}", convertToSting(level), message) << std::endl;
+
+    time_t now = time(0);
+    char* dateTime = ctime(&now);
+
+    this->_logger << std::format("{} | [{}]:{}", dateTime, convertToSting(level), message) << std::endl;
 
     this->_logger.flush();
 }
